@@ -47,18 +47,23 @@ class ListAndItemModelTest(TestCase):
 
 class ListViewTest(TestCase):
     def test_uses_list_template(self):
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        response = self.client.get('/lists/%d/' % (list_.id,))
         self.assertTemplateUsed(response,'list.html')
 
     def test_displays_all_items(self):
-        list_ = List.objects.create()
-        Item.objects.create(text='itemey 1',list=list_)
-        Item.objects.create(text='itemey 2',list=list_)
+        correct_list = List.objects.create()
+        Item.objects.create(text='itemey 1',list=correct_list)
+        Item.objects.create(text='itemey 2',list=correct_list)
 
-        response = self.client.get('/lists/the-only-list-in-the-world/') #1
+		other_list = List.objects.create()
+		Item.objects.create(text='other list item 1',list=other_list)
+		Item.objects.create(text='other list item 2',list=other_list)
+        response = self.client.get('/lists/%d/' % (correct_list.id,)) #1
 
-        self.assertContains(response, 'itemey 1') #2
-        self.assertContains(response, 'itemey 2') #3
+        self.assertContains(response, 'itemey 1') 
+        self.assertContains(response, 'itemey 2') 
+		self.assertNotContains(response,'other list item 1')
+		self.assertNotContains(response,'other list item 2')
 
 class NewListTest(TestCase):
     def test_saving_a_POST_request(self):
