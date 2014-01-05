@@ -12,8 +12,7 @@ class NewVisitorTest(LiveServerTestCase):
 
     def tearDown(self):
 		#time.sleep(3)
-	    self.browser.quit()
-		#pass
+		self.browser.quit()
 
 	
     def test_can_start_a_list_and_retrieve_it_later(self):
@@ -89,6 +88,20 @@ class NewVisitorTest(LiveServerTestCase):
 		# Satisified, she goes back to sleep
 
         self.fail('Finish the test!')
+		
+    def test_layout_and_styling(self):
+        # Edith goes to the home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # She notices the input box is nicely centered
+        inputbox.send_keys('testing\n')
+        inputbox = self.browser.find_element_by_tag_name('input')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=3
+        )
 
     def check_for_row_in_list_table(self,row_text):
         table = self.browser.find_element_by_id('id_list_table')
